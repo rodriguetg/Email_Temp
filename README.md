@@ -124,12 +124,27 @@ CUSTOM_DOMAINS=entreprise1.com,entreprise2.fr
 
 ## 📝 Changelog
 
-### Version 1.0.0 (Date actuelle)
+### Version 1.1.0 (Date actuelle)
+- ✨ Amélioration de l'interface utilisateur
+  - Ajout du curseur pointer pour les notifications cliquables
+  - Meilleure interaction visuelle avec les emails
+  - Transition fluide pour les éléments interactifs
+- 🔄 Optimisation des performances
+  - Amélioration de la gestion des événements
+  - Meilleure réactivité des notifications
+
+### Version 1.0.0
 - ✨ Première version stable
 - 🎨 Interface utilisateur moderne
 - 🔒 Système de rate limiting
 - 📧 Génération d'emails réalistes
 - 🌓 Support thème clair/sombre
+
+## 🔜 Prochaines étapes
+- [ ] Amélioration de la gestion des pièces jointes
+- [ ] Ajout de filtres pour les emails
+- [ ] Support pour plus de domaines email
+- [ ] Interface d'administration
 
 ## 🔐 Sécurité
 

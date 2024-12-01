@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: service-email-temp
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: EMAIL_EXPIRATION_HOURS
+        value: 72
+      - key: PRO_EMAIL_EXPIRATION_HOURS
+        value: 168

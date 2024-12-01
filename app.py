@@ -55,8 +55,8 @@ def get_rate_limit(domain):
 
 def get_expiration_hours(domain):
     if is_professional_domain(domain):
-        return int(os.getenv('PRO_EMAIL_EXPIRATION_HOURS', '72'))
-    return int(os.getenv('EMAIL_EXPIRATION_HOURS', '24'))
+        return int(os.getenv('PRO_EMAIL_EXPIRATION_HOURS', '168'))  # 7 jours par défaut pour les pros
+    return int(os.getenv('EMAIL_EXPIRATION_HOURS', '72'))  # 3 jours par défaut pour les persos
 
 def get_max_test_emails(domain):
     if is_professional_domain(domain):
@@ -162,16 +162,23 @@ class EmailStorage:
 
             msg_id = hashlib.sha256(f"{to_email}{time.time()}".encode()).hexdigest()[:12]
             
+            # Codes de vérification plus visibles
+            verification_codes = [
+                "123456",
+                "789012",
+                "345678"
+            ]
+            
             subjects = [
-                "Bienvenue sur notre service !",
-                "Confirmation de votre inscription",
-                "Important : Vérification de compte"
+                "Code de vérification",
+                "Votre code d'accès",
+                "Code de sécurité"
             ]
             
             bodies = [
-                "Merci d'utiliser notre service d'email temporaire. Ceci est un message de test.",
-                "Votre compte a été créé avec succès. Vous pouvez maintenant utiliser tous nos services.",
-                "Pour des raisons de sécurité, nous devons vérifier votre compte. Cliquez sur le lien ci-dessous."
+                f"Votre code de vérification est : {verification_codes[0]}",
+                f"Utilisez ce code d'accès : {verification_codes[1]}",
+                f"Code de sécurité temporaire : {verification_codes[2]}"
             ]
             
             attachments = [
