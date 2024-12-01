@@ -86,6 +86,14 @@
             width: 3rem;
             height: 3rem;
         }
+
+        .bi-arrow-clockwise-animate {
+            animation: rotate 1s linear infinite;
+        }
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
@@ -114,14 +122,23 @@
                         </button>
                         
                         <div id="emailInfo" class="mt-3" style="display: none;">
-                            <h5>Votre adresse email temporaire :</h5>
-                            <div class="input-group mb-3">
-                                <input type="text" id="emailAddress" class="form-control" readonly>
-                                <button class="btn btn-outline-primary" onclick="copyEmail()">
-                                    <i class="bi bi-clipboard"></i> Copier
-                                </button>
+                            <div class="card mb-4">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <h5 class="card-title mb-0">Votre adresse email temporaire</h5>
+                                        <div>
+                                            <button class="btn btn-primary me-2" onclick="refreshEmails()">
+                                                <i class="bi bi-arrow-clockwise"></i> Rafraîchir
+                                            </button>
+                                            <button class="btn btn-outline-primary" onclick="copyEmail()">
+                                                <i class="bi bi-clipboard"></i> Copier
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <p id="emailAddress" class="lead mb-2">Aucune adresse générée</p>
+                                    <p id="expirationTime" class="text-muted small"></p>
+                                </div>
                             </div>
-                            <div id="expirationTime" class="small text-muted"></div>
                         </div>
                     </div>
                 </div>
@@ -136,7 +153,7 @@
     </div>
 
     <script>
-        let currentEmail = '';
+        let currentEmail = null;
         let checkInterval;
         let isDarkTheme = false;
 
@@ -170,9 +187,9 @@
 
         async function copyEmail() {
             const emailInput = document.getElementById('emailAddress');
-            await navigator.clipboard.writeText(emailInput.value);
+            await navigator.clipboard.writeText(emailInput.textContent);
             
-            const copyBtn = emailInput.nextElementSibling;
+            const copyBtn = emailInput.nextElementSibling.nextElementSibling;
             copyBtn.innerHTML = '<i class="bi bi-check2"></i> Copié!';
             copyBtn.classList.replace('btn-outline-primary', 'btn-success');
             
@@ -216,34 +233,22 @@
             }
         }
 
-        document.getElementById('generateBtn').addEventListener('click', async () => {
+        async function refreshEmails() {
+            const refreshBtn = document.querySelector('[onclick="refreshEmails()"]');
+            const icon = refreshBtn.querySelector('i');
+            
+            // Ajouter une classe de rotation à l'icône
+            icon.classList.add('bi-arrow-clockwise-animate');
+            refreshBtn.disabled = true;
+
             try {
-                const response = await fetch('/generate', { method: 'POST' });
-                const data = await response.json();
-                
-                currentEmail = data.email;
-                
-                // Affiche l'email
-                document.getElementById('emailInfo').style.display = 'block';
-                document.getElementById('emailAddress').value = currentEmail;
-                
-                // Affiche le temps d'expiration
-                const expirationTime = document.getElementById('expirationTime');
-                expirationTime.textContent = calculateTimeRemaining(data.expiration);
-                
-                // Commence la vérification des emails
-                if (checkInterval) clearInterval(checkInterval);
-                checkEmails();
-                checkInterval = setInterval(checkEmails, 5000);
-                
-                // Met à jour les stats
-                updateStats();
-                
-            } catch (error) {
-                console.error('Erreur:', error);
-                alert('Erreur lors de la génération de l\'email');
+                await checkEmails();
+            } finally {
+                // Retirer la classe de rotation et réactiver le bouton
+                icon.classList.remove('bi-arrow-clockwise-animate');
+                refreshBtn.disabled = false;
             }
-        });
+        }
 
         async function checkEmails() {
             if (!currentEmail) return;
@@ -261,60 +266,88 @@
                 }
 
                 const data = await response.json();
-                const emailList = document.getElementById('emailList');
                 
-                if (!data.emails || data.emails.length === 0) {
-                    emailList.innerHTML = `
-                        <div class="card">
-                            <div class="card-body text-center">
-                                <i class="bi bi-inbox h1"></i>
-                                <h5>Aucun email reçu</h5>
-                                <p class="text-muted">Les nouveaux emails apparaîtront ici automatiquement</p>
-                            </div>
-                        </div>
-                    `;
-                    return;
+                // Mettre à jour l'affichage
+                const emailAddressElement = document.getElementById('emailAddress');
+                const expirationElement = document.getElementById('expirationTime');
+                
+                if (currentEmail) {
+                    emailAddressElement.textContent = currentEmail;
+                    if (data.expiration) {
+                        const timeRemaining = calculateTimeRemaining(data.expiration);
+                        expirationElement.textContent = `Expire dans ${timeRemaining}`;
+                    }
                 }
 
-                emailList.innerHTML = data.emails.map(email => `
-                    <div class="email-box ${!email.read ? 'unread' : ''}" 
-                         data-email-id="${email.id}"
-                         onclick="markAsRead('${email.id}')">
-                        <div class="email-header">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h5 class="mb-1">${email.subject}</h5>
-                                    <div class="text-muted">
-                                        De: ${email.from}
+                // Mettre à jour la liste des emails
+                const emailsList = document.getElementById('emailList');
+                emailsList.innerHTML = '';
+                
+                if (data.emails && data.emails.length > 0) {
+                    data.emails.forEach(email => {
+                        const emailBox = document.createElement('div');
+                        emailBox.className = `email-box ${email.read ? '' : 'unread'}`;
+                        emailBox.innerHTML = `
+                            <div class="email-header">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h5 class="mb-1">${email.subject}</h5>
+                                        <div class="text-muted">
+                                            De: ${email.from}
+                                        </div>
                                     </div>
+                                    <small class="text-muted">${formatDate(email.date)}</small>
                                 </div>
-                                <small class="text-muted">${formatDate(email.date)}</small>
                             </div>
-                        </div>
-                        <div class="email-content">
-                            <pre style="white-space: pre-wrap; font-family: inherit;">${email.body}</pre>
-                            ${email.attachments && email.attachments.length > 0 ? `
-                                <div class="mt-2">
-                                    <h6>Pièces jointes:</h6>
-                                    <ul class="list-unstyled">
-                                        ${email.attachments.map(att => `
-                                            <li><i class="bi bi-paperclip"></i> ${att}</li>
-                                        `).join('')}
-                                    </ul>
-                                </div>
-                            ` : ''}
-                        </div>
-                    </div>
-                `).join('');
+                            <div class="email-content">
+                                <pre style="white-space: pre-wrap; font-family: inherit;">${email.body}</pre>
+                                ${email.attachments && email.attachments.length > 0 ? `
+                                    <div class="mt-2">
+                                        <h6>Pièces jointes:</h6>
+                                        <ul class="list-unstyled">
+                                            ${email.attachments.map(att => `
+                                                <li><i class="bi bi-paperclip"></i> ${att}</li>
+                                            `).join('')}
+                                        </ul>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        `;
+                        emailBox.setAttribute('data-email-id', email.id);
+                        emailBox.onclick = () => markAsRead(email.id);
+                        emailsList.appendChild(emailBox);
+                    });
+                } else {
+                    emailsList.innerHTML = '<p class="text-center text-muted">Aucun email reçu</p>';
+                }
+            } catch (error) {
+                console.error('Erreur lors de la vérification des emails:', error);
+            }
+        }
 
-                // Met à jour le temps d'expiration
-                document.getElementById('expirationTime').textContent = 
-                    calculateTimeRemaining(data.expiration);
+        document.getElementById('generateBtn').addEventListener('click', async () => {
+            try {
+                const response = await fetch('/generate', { method: 'POST' });
+                const data = await response.json();
+                
+                currentEmail = data.email;
+                
+                // Affiche l'email
+                document.getElementById('emailInfo').style.display = 'block';
+                
+                // Commence la vérification des emails
+                if (checkInterval) clearInterval(checkInterval);
+                checkEmails();
+                checkInterval = setInterval(checkEmails, 5000);
+                
+                // Met à jour les stats
+                updateStats();
                 
             } catch (error) {
                 console.error('Erreur:', error);
+                alert('Erreur lors de la génération de l\'email');
             }
-        }
+        });
 
         // Met à jour les stats toutes les 30 secondes
         setInterval(updateStats, 30000);

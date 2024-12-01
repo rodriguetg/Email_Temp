@@ -20,7 +20,7 @@ Service web permettant de générer et gérer des adresses email temporaires de 
 
 1. Cloner le projet
 ```bash
-git clone [url-du-projet]
+git clone https://github.com/rodriguetg/service-email-temporaire.git
 cd "Service d'email temporaire"
 ```
 
@@ -50,6 +50,35 @@ python app.py
 
 2. Accéder à l'interface
 Ouvrir http://localhost:5000 dans votre navigateur
+
+## 👨‍💻 Utilisation
+
+1. Après avoir lancé l'application, accédez à http://localhost:5000
+2. Sur l'interface, vous pouvez :
+   - Générer une nouvelle adresse email temporaire
+   - Voir les emails reçus en temps réel
+   - Copier l'adresse générée en un clic
+   - Changer le thème (clair/sombre)
+   - Voir le temps restant avant expiration
+
+3. Pour les tests :
+   - Utilisez le bouton "Envoyer un email test" pour vérifier la réception
+   - Les emails de test apparaîtront instantanément dans votre boîte
+   - Maximum 3 emails de test par adresse
+
+4. En cas de non réception d'emails :
+   - Vérifiez que le serveur est bien lancé
+   - Assurez-vous que l'adresse n'a pas expiré
+   - Consultez les logs dans `email_service.log`
+   - Vérifiez votre connexion internet
+
+## 🔍 Dépannage
+
+Si vous ne recevez pas les codes ou emails :
+1. Vérifiez le fichier de log `email_service.log`
+2. Assurez-vous que le pare-feu n'empêche pas les connexions
+3. Vérifiez que le port 5000 n'est pas utilisé par une autre application
+4. Redémarrez le serveur en cas de doute
 
 ## 🔧 Configuration des Domaines
 
@@ -129,6 +158,12 @@ Les contributions sont les bienvenues ! N'hésitez pas à :
 3. Commit vos changements (`git commit -m 'Add some AmazingFeature'`)
 4. Push sur la branche (`git push origin feature/AmazingFeature`)
 5. Ouvrir une Pull Request
+
+## 📞 Contact & Support
+
+- GitHub: [@rodriguetg](https://github.com/rodriguetg)
+- Pour signaler un bug : Ouvrez une issue sur GitHub
+- Pour contribuer : Créez une pull request
 
 ## 📄 Licence
 
