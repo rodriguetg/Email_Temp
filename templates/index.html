@@ -207,6 +207,7 @@
                 const emailBox = document.querySelector(`[data-email-id="${emailId}"]`);
                 if (emailBox) {
                     emailBox.classList.remove('unread');
+                    emailBox.style.cursor = 'pointer';
                 }
             } catch (error) {
                 console.error('Erreur lors du marquage comme lu:', error);
@@ -287,6 +288,11 @@
                     data.emails.forEach(email => {
                         const emailBox = document.createElement('div');
                         emailBox.className = `email-box ${email.read ? '' : 'unread'}`;
+                        emailBox.style.cursor = 'pointer';
+                        emailBox.style.transition = 'all 0.3s ease';
+                        emailBox.style.cursor = 'pointer';
+                        emailBox.setAttribute('data-email-id', email.id);
+                        emailBox.onclick = () => markAsRead(email.id);
                         emailBox.innerHTML = `
                             <div class="email-header">
                                 <div class="d-flex justify-content-between align-items-center">
@@ -313,8 +319,6 @@
                                 ` : ''}
                             </div>
                         `;
-                        emailBox.setAttribute('data-email-id', email.id);
-                        emailBox.onclick = () => markAsRead(email.id);
                         emailsList.appendChild(emailBox);
                     });
                 } else {
