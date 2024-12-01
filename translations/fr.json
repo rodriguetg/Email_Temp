@@ -1,0 +1,46 @@
+{
+    "app": {
+        "title": "Service d'Email Temporaire",
+        "generate_button": "Générer une adresse email",
+        "custom_email": "Personnaliser l'adresse",
+        "your_temp_email": "Votre adresse email temporaire",
+        "copy_address": "Copier l'adresse",
+        "time_remaining": "Temps restant",
+        "extend": "Prolonger",
+        "refresh": "Actualiser",
+        "search_placeholder": "Rechercher dans les emails...",
+        "export_pdf": "Exporter en PDF",
+        "export_text": "Exporter en texte",
+        "theme_toggle": "Changer de thème",
+        "language": "Langue",
+        "stats": "Statistiques",
+        "multiple_addresses": "Gérer plusieurs adresses",
+        "spam_protection": "Protection anti-spam",
+        "notifications": {
+            "copied": "Adresse email copiée !",
+            "extended": "Durée de vie prolongée !",
+            "deleted": "Email supprimé",
+            "download_error": "Erreur lors du téléchargement",
+            "export_success": "Export réussi !",
+            "spam_detected": "Spam détecté et bloqué",
+            "address_expired": "Adresse email expirée"
+        }
+    },
+    "email": {
+        "from": "De",
+        "subject": "Sujet",
+        "date": "Date",
+        "attachments": "Pièces jointes",
+        "actions": {
+            "delete": "Supprimer",
+            "mark_read": "Marquer comme lu",
+            "download": "Télécharger"
+        }
+    },
+    "stats": {
+        "total_emails": "Nombre total d'emails",
+        "spam_blocked": "Spams bloqués",
+        "attachments_size": "Taille totale des pièces jointes",
+        "active_addresses": "Adresses actives"
+    }
+}

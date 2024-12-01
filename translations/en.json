@@ -1,0 +1,46 @@
+{
+    "app": {
+        "title": "Temporary Email Service",
+        "generate_button": "Generate Email Address",
+        "custom_email": "Customize Address",
+        "your_temp_email": "Your temporary email address",
+        "copy_address": "Copy address",
+        "time_remaining": "Time remaining",
+        "extend": "Extend",
+        "refresh": "Refresh",
+        "search_placeholder": "Search emails...",
+        "export_pdf": "Export to PDF",
+        "export_text": "Export to text",
+        "theme_toggle": "Toggle theme",
+        "language": "Language",
+        "stats": "Statistics",
+        "multiple_addresses": "Manage multiple addresses",
+        "spam_protection": "Spam protection",
+        "notifications": {
+            "copied": "Email address copied!",
+            "extended": "Lifetime extended!",
+            "deleted": "Email deleted",
+            "download_error": "Download error",
+            "export_success": "Export successful!",
+            "spam_detected": "Spam detected and blocked",
+            "address_expired": "Email address expired"
+        }
+    },
+    "email": {
+        "from": "From",
+        "subject": "Subject",
+        "date": "Date",
+        "attachments": "Attachments",
+        "actions": {
+            "delete": "Delete",
+            "mark_read": "Mark as read",
+            "download": "Download"
+        }
+    },
+    "stats": {
+        "total_emails": "Total emails",
+        "spam_blocked": "Spam blocked",
+        "attachments_size": "Total attachments size",
+        "active_addresses": "Active addresses"
+    }
+}
