@@ -6,7 +6,7 @@ import string
 import hashlib
 import logging
 import threading
-from datetime import datetime, timedelta
+from datetime import datetime
 from flask import Flask, jsonify, request, render_template
 from functools import wraps
 
@@ -19,6 +19,9 @@ logging.basicConfig(
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
+
+# Durée de la fenêtre de limitation de taux (en secondes)
+RATE_LIMIT_WINDOW = 3600
 
 # Noms français pour la génération d'emails
 PRENOMS = ['Jean', 'Pierre', 'Marie', 'Sophie', 'Lucas', 'Emma', 'Louis', 'Léa', 'Thomas', 'Camille',
@@ -243,26 +246,33 @@ class EmailStorage:
 # Rate limiting simple
 def rate_limit(f):
     requests = {}
-    
+    lock = threading.Lock()
+
     @wraps(f)
     def decorated_function(*args, **kwargs):
         ip = request.remote_addr
         current_time = time.time()
-        
-        # Nettoie les anciennes entrées
-        requests.clear()  # Simplifié pour éviter les problèmes de thread
-        
-        if ip not in requests:
-            requests[ip] = []
-        
-        requests[ip].append(current_time)
-        
-        # Limite simple : 50 requêtes par IP
-        if len(requests[ip]) > get_rate_limit(request.remote_addr):
+        window_start = current_time - RATE_LIMIT_WINDOW
+
+        with lock:
+            for tracked_ip in list(requests.keys()):
+                recent_requests = [ts for ts in requests[tracked_ip] if ts > window_start]
+
+                if recent_requests:
+                    requests[tracked_ip] = recent_requests
+                else:
+                    del requests[tracked_ip]
+
+            timestamps = requests.setdefault(ip, [])
+            timestamps.append(current_time)
+
+            is_limited = len(timestamps) > get_rate_limit(request.remote_addr)
+
+        if is_limited:
             return jsonify({'error': 'Trop de requêtes'}), 429
-        
+
         return f(*args, **kwargs)
-    
+
     return decorated_function
 
 # Instance globale du stockage d'emails
